@@ -83,8 +83,10 @@ jobs:
           cd build/app/outputs/flutter-apk
           cp app-arm64-v8a-release.apk zonik.apk
           cp app-armeabi-v7a-release.apk zonik-armv7.apk
+          ls -la zonik.apk zonik-armv7.apk
           APKSIGNER="$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)/apksigner"
-          "$APKSIGNER" verify --print-certs zonik.apk | grep -m1 "Signer #1 certificate SHA-256"
+          echo "apksigner : $APKSIGNER"
+          "$APKSIGNER" verify --print-certs zonik.apk || { echo "Signature invalide ou absente"; exit 1; }
           SIZE=$(stat -c %s zonik.apk)
           echo "zonik.apk : $((SIZE / 1048576)) Mo"
           test "$SIZE" -lt 120000000 || { echo "APK anormalement gros : strip probablement absent"; exit 1; }
